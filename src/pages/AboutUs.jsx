@@ -23,14 +23,14 @@ const AboutUs = () => {
 
   const teamMembers = [
     {
-      name: "Alex Rodriguez",
-      role: "Lead Developer",
+      name: "Vibhor Gupta",
+      role: "Lead Website Developer, Team Management and overall Ideation",
       specialization: "Full-Stack Development & IoT Integration",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
-      skills: ["React", "Node.js", "Arduino", "Python"],
+      image: "/Vibhor.jpg",
+      skills: ["React", "Node.js", "C++", "Python"],
       icon: Code,
-      github: "alexrod",
-      linkedin: "alex-rodriguez"
+      github: "https://github.com/VikingForcee",
+      linkedin: "https://www.linkedin.com/in/vibhor-gupta-221a3328a/"
     },
     {
       name: "Priya Sharma",
@@ -72,7 +72,7 @@ const AboutUs = () => {
     image: "/jaimalamaam.jpg",
     experience: "15+ years",
     research: ["Smart Grid Technology", "IoT in Power Systems", "Renewable Energy Integration"],
-    email: "j.gambhir@pec.edu.in",
+    email: "jgambhir@pec.edu.in",
     publications: "50+ research papers"
   };
 
@@ -392,9 +392,13 @@ const AboutUs = () => {
             <button className="bg-white text-blue-600 hover:bg-blue-50 font-medium py-3 px-8 rounded-lg transition-colors duration-200">
               View Documentation
             </button>
-            <button className="border border-white text-white hover:bg-white hover:text-blue-600 font-medium py-3 px-8 rounded-lg transition-colors duration-200">
+            <button
+              onClick={() => window.open('https://github.com/VikingForcee/SmartMeteringSystem', '_blank')}
+              className="border border-white text-white hover:bg-white hover:text-blue-600 font-medium py-3 px-8 rounded-lg transition-colors duration-200"
+            >
               GitHub Repository
             </button>
+
           </div>
         </div>
       </main>
