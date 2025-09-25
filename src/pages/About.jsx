@@ -43,11 +43,11 @@ export default function AboutPage() {
   ];
 
   const mentor = {
-    name: "Dr. Michael Thompson",
-    title: "Professor of Electrical Engineering",
-    institution: "Institute of Technology",
-    specialization: "Smart Grid Systems & Renewable Energy",
-    image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&h=200&fit=crop&crop=face",
+    name: "Prof. Jaimala Gambhir",
+    title: "Associate Professor of Electrical Engineering",
+    institution: "Punjab Engineering College, Chandigarh",
+    specialization: "Renewable Energy, Power Electronics, Smart Grid",
+    image: "/public/jaimalamaam.jpg",
     experience: "15+ years",
     research: ["Smart Grid Technology", "IoT in Power Systems", "Renewable Energy Integration"],
     email: "m.thompson@institute.edu",
