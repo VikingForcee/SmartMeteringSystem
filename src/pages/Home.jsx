@@ -1,294 +1,300 @@
-import { useState, useEffect } from 'react';
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, AreaChart, Area } from 'recharts';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import Navbar from '../components/Navbar';
+import { 
+  Zap, 
+  Activity, 
+  DollarSign, 
+  TrendingUp, 
+  ArrowRight, 
+  Brain, 
+  Play, 
+  Phone,
+  BarChart3,
+  Power,
+  Target,
+  Users,
+  Settings
+} from 'lucide-react';
+import {
+  selectTotalLiveLoad,
+  selectDailyAverageUnits,
+  selectCycleBillToDate,
+  selectProjectedExpense,
+  selectCurrent,
+  selectPowerFactor
+} from '../store/electricalSlice';
 
-export default function ElectricalDashboard() {
-  const [currentTime, setCurrentTime] = useState(new Date());
-  const [meterData, setMeterData] = useState({
-    voltage: 240.5,
-    current: 12.8,
-    power: 3.1,
-    energy: 1247.3
-  });
+const Home = () => {
+  const electrical = useSelector((state) => state.electrical);
+  const totalLiveLoad = useSelector(selectTotalLiveLoad);
+  const dailyAverageUnits = useSelector(selectDailyAverageUnits);
+  const cycleBillToDate = useSelector(selectCycleBillToDate);
+  const projectedExpense = useSelector(selectProjectedExpense);
+  const current = useSelector(selectCurrent);
+  const powerFactor = useSelector(selectPowerFactor);
 
-  // Simulate real-time data updates
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTime(new Date());
-      setMeterData(prev => ({
-        voltage: 240 + (Math.random() - 0.5) * 10,
-        current: 12 + (Math.random() - 0.5) * 4,
-        power: 2.8 + (Math.random() - 0.5) * 0.8,
-        energy: prev.energy + Math.random() * 0.1
-      }));
-    }, 2000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  // Sample chart data
-  const powerTrendData = [
-    { time: '00:00', power: 2.1 },
-    { time: '04:00', power: 1.8 },
-    { time: '08:00', power: 3.2 },
-    { time: '12:00', power: 3.8 },
-    { time: '16:00', power: 3.5 },
-    { time: '20:00', power: 3.1 },
-    { time: '24:00', power: 2.3 }
+  const kpis = [
+    {
+      title: 'Total Live Load',
+      value: `${(totalLiveLoad / 1000).toFixed(2)} kW`,
+      change: electrical.mainSwitch ? 'Active' : 'Inactive',
+      changeType: electrical.mainSwitch ? 'increase' : 'decrease',
+      icon: Power,
+      color: electrical.mainSwitch ? 'bg-green-500' : 'bg-red-500'
+    },
+    {
+      title: 'Daily Average Units',
+      value: `${dailyAverageUnits.toFixed(1)} kWh`,
+      change: '+2.1%',
+      changeType: 'increase',
+      icon: Activity,
+      color: 'bg-blue-500'
+    },
+    {
+      title: 'Bill This Cycle',
+      value: `₹${cycleBillToDate.toFixed(0)}`,
+      change: `@ ₹${electrical.tariffRate}/unit`,
+      changeType: 'neutral',
+      icon: DollarSign,
+      color: 'bg-purple-500'
+    },
+    {
+      title: 'Projected Monthly',
+      value: `₹${projectedExpense.toFixed(0)}`,
+      change: 'Based on avg',
+      changeType: 'increase',
+      icon: TrendingUp,
+      color: 'bg-orange-500'
+    }
   ];
 
-  const voltageData = [
-    { time: '10s', voltage: 242 },
-    { time: '8s', voltage: 241 },
-    { time: '6s', voltage: 240 },
-    { time: '4s', voltage: 239 },
-    { time: '2s', voltage: 241 },
-    { time: 'now', voltage: meterData.voltage }
+  const electricalMetrics = [
+    { label: 'Voltage', value: `${electrical.voltage}V`, unit: 'V' },
+    { label: 'Current', value: `${current.toFixed(1)}A`, unit: 'A' },
+    { label: 'Power Factor', value: powerFactor.toFixed(2), unit: '' },
+    { label: 'Frequency', value: `${electrical.frequency}Hz`, unit: 'Hz' }
   ];
+
+  const quickActions = [
+    {
+      title: 'Control Panel',
+      description: 'Manage electrical loads and switches',
+      icon: Settings,
+      path: '/control-panel',
+      color: 'from-green-500 to-teal-500'
+    },
+    {
+      title: 'AI Assistant',
+      description: 'Get intelligent insights and assistance',
+      icon: Brain,
+      path: '/ai',
+      color: 'from-purple-500 to-pink-500'
+    },
+    {
+      title: 'Run Simulation',
+      description: 'Test scenarios with our simulation tool',
+      icon: Play,
+      path: '/simulation',
+      color: 'from-blue-500 to-cyan-500'
+    }
+  ];
+
+  const activeLoads = Object.entries(electrical.loads)
+    .filter(([_, load]) => load.isOn && electrical.mainSwitch)
+    .slice(0, 6); // Show top 6 active loads
+
+  const consumptionTrend = electrical.dailyConsumption.slice(-7).map((consumption, index) => ({
+    day: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][index] || `Day ${index + 1}`,
+    value: consumption
+  }));
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 pt-20 px-6">
-      <div className="max-w-7xl mx-auto">
-        
-        {/* Header Section */}
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
+      
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Welcome Section */}
         <div className="mb-8">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+          <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent mb-2">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
                 Electrical Dashboard
               </h1>
-              <p className="text-gray-400 text-lg">Real-time meter readings and system monitoring</p>
+              <p className="text-gray-600">
+                Monitor your electrical consumption and manage loads efficiently
+              </p>
             </div>
-            <div className="mt-4 md:mt-0 text-right">
-              <div className="text-cyan-400 font-mono text-lg">
-                {currentTime.toLocaleTimeString()}
-              </div>
-              <div className="text-gray-400 text-sm">
-                {currentTime.toLocaleDateString()}
-              </div>
+            <div className={`flex items-center space-x-2 px-4 py-2 rounded-full ${
+              electrical.mainSwitch ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+            }`}>
+              <div className={`w-3 h-3 rounded-full ${
+                electrical.mainSwitch ? 'bg-green-500 animate-pulse' : 'bg-red-500'
+              }`}></div>
+              <span className="font-medium">
+                {electrical.mainSwitch ? 'System Online' : 'System Offline'}
+              </span>
             </div>
           </div>
         </div>
 
         {/* KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          
-          {/* Voltage KPI */}
-          <div className="relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl blur opacity-20 group-hover:opacity-30 transition duration-300"></div>
-            <div className="relative bg-black/50 backdrop-blur-sm border border-cyan-500/20 rounded-xl p-6 hover:border-cyan-500/40 transition-all duration-300">
-              <div className="flex items-center justify-between mb-4">
-                <div className="p-3 bg-cyan-500/10 rounded-lg">
-                  <svg className="w-8 h-8 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
-                </div>
-                <div className="text-right">
-                  <div className="text-2xl md:text-3xl font-bold text-white">
-                    {meterData.voltage.toFixed(1)}
+          {kpis.map((kpi, index) => {
+            const IconComponent = kpi.icon;
+            return (
+              <div
+                key={index}
+                className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200"
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <div className={`w-12 h-12 ${kpi.color} rounded-lg flex items-center justify-center`}>
+                    <IconComponent className="w-6 h-6 text-white" />
                   </div>
-                  <div className="text-cyan-400 text-sm font-medium">V</div>
+                  <span
+                    className={`text-sm font-medium px-2 py-1 rounded-full ${
+                      kpi.changeType === 'increase'
+                        ? 'text-green-700 bg-green-100'
+                        : kpi.changeType === 'decrease'
+                        ? 'text-red-700 bg-red-100'
+                        : 'text-gray-700 bg-gray-100'
+                    }`}
+                  >
+                    {kpi.change}
+                  </span>
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-1">
+                    {kpi.value}
+                  </h3>
+                  <p className="text-gray-600 text-sm">{kpi.title}</p>
                 </div>
               </div>
-              <div className="text-gray-400 text-sm mb-2">Voltage</div>
-              <div className="flex items-center text-green-400 text-xs">
-                <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
-                Normal Range
-              </div>
+            );
+          })}
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+          {/* Electrical Parameters */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Electrical Parameters</h3>
+            <div className="space-y-4">
+              {electricalMetrics.map((metric, index) => (
+                <div key={index} className="flex justify-between items-center py-2">
+                  <span className="text-gray-600">{metric.label}</span>
+                  <span className="font-semibold text-gray-900">{metric.value}</span>
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* Current KPI */}
-          <div className="relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl blur opacity-20 group-hover:opacity-30 transition duration-300"></div>
-            <div className="relative bg-black/50 backdrop-blur-sm border border-purple-500/20 rounded-xl p-6 hover:border-purple-500/40 transition-all duration-300">
-              <div className="flex items-center justify-between mb-4">
-                <div className="p-3 bg-purple-500/10 rounded-lg">
-                  <svg className="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
-                </div>
-                <div className="text-right">
-                  <div className="text-2xl md:text-3xl font-bold text-white">
-                    {meterData.current.toFixed(1)}
+          {/* Active Loads */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Active Loads</h3>
+              <Link 
+                to="/control-panel"
+                className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+              >
+                Manage All
+              </Link>
+            </div>
+            <div className="space-y-3">
+              {activeLoads.length > 0 ? (
+                activeLoads.map(([loadName, load], index) => (
+                  <div key={index} className="flex items-center justify-between py-2">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                      <span className="text-gray-800 text-sm">{load.name}</span>
+                    </div>
+                    <span className="text-gray-600 text-sm">{load.power}W</span>
                   </div>
-                  <div className="text-purple-400 text-sm font-medium">A</div>
-                </div>
-              </div>
-              <div className="text-gray-400 text-sm mb-2">Current</div>
-              <div className="flex items-center text-yellow-400 text-xs">
-                <span className="w-2 h-2 bg-yellow-400 rounded-full mr-2 animate-pulse"></span>
-                Moderate Load
-              </div>
+                ))
+              ) : (
+                <p className="text-gray-500 text-sm py-4">No active loads</p>
+              )}
             </div>
           </div>
 
-          {/* Power KPI */}
-          <div className="relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl blur opacity-20 group-hover:opacity-30 transition duration-300"></div>
-            <div className="relative bg-black/50 backdrop-blur-sm border border-green-500/20 rounded-xl p-6 hover:border-green-500/40 transition-all duration-300">
-              <div className="flex items-center justify-between mb-4">
-                <div className="p-3 bg-green-500/10 rounded-lg">
-                  <svg className="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                  </svg>
-                </div>
-                <div className="text-right">
-                  <div className="text-2xl md:text-3xl font-bold text-white">
-                    {meterData.power.toFixed(1)}
+          {/* Weekly Consumption Trend */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Weekly Trend</h3>
+            <div className="space-y-3">
+              {consumptionTrend.map((day, index) => (
+                <div key={index} className="flex items-center space-x-3">
+                  <span className="w-8 text-sm text-gray-600">{day.day}</span>
+                  <div className="flex-1 bg-gray-200 rounded-full h-2">
+                    <div
+                      className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-500"
+                      style={{ width: `${Math.min((day.value / 30) * 100, 100)}%` }}
+                    ></div>
                   </div>
-                  <div className="text-green-400 text-sm font-medium">kW</div>
+                  <span className="w-12 text-sm font-medium text-gray-900">{day.value.toFixed(1)}</span>
                 </div>
-              </div>
-              <div className="text-gray-400 text-sm mb-2">Power</div>
-              <div className="flex items-center text-green-400 text-xs">
-                <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
-                Optimal
-              </div>
-            </div>
-          </div>
-
-          {/* Energy KPI */}
-          <div className="relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl blur opacity-20 group-hover:opacity-30 transition duration-300"></div>
-            <div className="relative bg-black/50 backdrop-blur-sm border border-orange-500/20 rounded-xl p-6 hover:border-orange-500/40 transition-all duration-300">
-              <div className="flex items-center justify-between mb-4">
-                <div className="p-3 bg-orange-500/10 rounded-lg">
-                  <svg className="w-8 h-8 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                  </svg>
-                </div>
-                <div className="text-right">
-                  <div className="text-2xl md:text-3xl font-bold text-white">
-                    {meterData.energy.toFixed(1)}
-                  </div>
-                  <div className="text-orange-400 text-sm font-medium">kWh</div>
-                </div>
-              </div>
-              <div className="text-gray-400 text-sm mb-2">Total Energy</div>
-              <div className="flex items-center text-orange-400 text-xs">
-                <span className="w-2 h-2 bg-orange-400 rounded-full mr-2 animate-pulse"></span>
-                This Month
-              </div>
+              ))}
             </div>
           </div>
         </div>
 
-        {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          
-          {/* Power Trend Chart */}
-          <div className="relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-xl blur"></div>
-            <div className="relative bg-black/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6">
-              <h3 className="text-xl font-semibold text-white mb-4 flex items-center">
-                <span className="w-3 h-3 bg-cyan-400 rounded-full mr-3 animate-pulse"></span>
-                24-Hour Power Consumption
-              </h3>
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={powerTrendData}>
-                    <defs>
-                      <linearGradient id="powerGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#22d3ee" stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor="#22d3ee" stopOpacity={0}/>
-                      </linearGradient>
-                    </defs>
-                    <XAxis 
-                      dataKey="time" 
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fill: '#9ca3af', fontSize: 12 }}
-                    />
-                    <YAxis 
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fill: '#9ca3af', fontSize: 12 }}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="power"
-                      stroke="#22d3ee"
-                      strokeWidth={3}
-                      fill="url(#powerGradient)"
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-          </div>
-
-          {/* Real-time Voltage Chart */}
-          <div className="relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-xl blur"></div>
-            <div className="relative bg-black/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6">
-              <h3 className="text-xl font-semibold text-white mb-4 flex items-center">
-                <span className="w-3 h-3 bg-purple-400 rounded-full mr-3 animate-pulse"></span>
-                Real-time Voltage
-              </h3>
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={voltageData}>
-                    <XAxis 
-                      dataKey="time" 
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fill: '#9ca3af', fontSize: 12 }}
-                    />
-                    <YAxis 
-                      domain={[235, 245]}
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fill: '#9ca3af', fontSize: 12 }}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="voltage"
-                      stroke="#a855f7"
-                      strokeWidth={3}
-                      dot={{ fill: '#a855f7', strokeWidth: 2, r: 4 }}
-                      activeDot={{ r: 6, stroke: '#a855f7', strokeWidth: 2, fill: '#fff' }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
+        {/* Quick Actions */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Quick Actions</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {quickActions.map((action, index) => {
+              const IconComponent = action.icon;
+              return (
+                <Link
+                  key={index}
+                  to={action.path}
+                  className="group bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-lg transition-all duration-200 hover:-translate-y-1"
+                >
+                  <div className={`w-12 h-12 bg-gradient-to-r ${action.color} rounded-lg flex items-center justify-center mb-4`}>
+                    <IconComponent className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                    {action.title}
+                  </h3>
+                  <p className="text-gray-600 mb-4">{action.description}</p>
+                  <div className="flex items-center text-blue-600 group-hover:text-blue-700 transition-colors">
+                    <span className="text-sm font-medium mr-2">Access Now</span>
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </div>
 
-        {/* Status Panel */}
-        <div className="relative group">
-          <div className="absolute bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded-xl blur"></div>
-          <div className="relative bg-black/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6">
-            <h3 className="text-xl font-semibold text-white mb-6">System Status</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              
-              <div className="flex items-center space-x-3">
-                <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-                <div>
-                  <div className="text-white font-medium">Grid Connection</div>
-                  <div className="text-green-400 text-sm">Online</div>
-                </div>
+        {/* System Status */}
+        <div className="bg-gradient-to-r from-blue-600 to-purple-700 rounded-xl p-8 text-white">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <div className="flex items-center justify-center mb-2">
+                <Zap className="w-8 h-8 mr-2" />
+                <span className="text-3xl font-bold">{Object.values(electrical.loads).filter(load => load.isOn).length}</span>
               </div>
-
-              <div className="flex items-center space-x-3">
-                <div className="w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
-                <div>
-                  <div className="text-white font-medium">Load Balance</div>
-                  <div className="text-yellow-400 text-sm">Monitoring</div>
-                </div>
+              <p className="text-blue-100">Active Devices</p>
+            </div>
+            <div className="text-center">
+              <div className="flex items-center justify-center mb-2">
+                <Target className="w-8 h-8 mr-2" />
+                <span className="text-3xl font-bold">₹{electrical.tariffRate}</span>
               </div>
-
-              <div className="flex items-center space-x-3">
-                <div className="w-3 h-3 bg-cyan-400 rounded-full animate-pulse"></div>
-                <div>
-                  <div className="text-white font-medium">Data Logger</div>
-                  <div className="text-cyan-400 text-sm">Recording</div>
-                </div>
+              <p className="text-blue-100">Per Unit Rate</p>
+            </div>
+            <div className="text-center">
+              <div className="flex items-center justify-center mb-2">
+                <Activity className="w-8 h-8 mr-2" />
+                <span className="text-3xl font-bold">24/7</span>
               </div>
+              <p className="text-blue-100">Monitoring</p>
             </div>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
-}
+};
+
+export default Home;

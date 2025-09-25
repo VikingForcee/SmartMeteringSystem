@@ -1,7 +1,7 @@
-function Simulation(){
-    return(
+function Simulation() {
+    return (
         <>
-            <h1 className="font-extrabold">Simulation Page</h1>
+            <h1 className="font-extrabold">Simulation</h1>
         </>
     )
 }
