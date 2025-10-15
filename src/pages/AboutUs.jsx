@@ -33,30 +33,40 @@ const AboutUs = () => {
       linkedin: "https://www.linkedin.com/in/vibhor-gupta-221a3328a/"
     },
     {
-      name: "Priya Sharma",
+      name: "Vinayak Pandey",
       role: "Hardware Engineer",
       specialization: "Circuit Design & Embedded Systems",
-      image: "https://images.unsplash.com/photo-1494790108755-2616b612b932?w=150&h=150&fit=crop&crop=face",
+      image: "/dummyimg.png",
       skills: ["PCB Design", "Microcontrollers", "Sensors", "CAD"],
       icon: Cpu,
       github: "priyaeng",
       linkedin: "priya-sharma"
     },
     {
-      name: "David Chen",
+      name: "Rishabh Sood",
       role: "Data Analyst",
       specialization: "Power Systems & Data Analytics",
-      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
+      image: "/dummyimg.png",
       skills: ["Python", "Machine Learning", "Power Analysis", "SQL"],
       icon: BarChart3,
       github: "davidchen",
       linkedin: "david-chen"
     },
     {
-      name: "Sarah Kim",
+      name: "Rohan Malik",
       role: "UI/UX Designer",
       specialization: "Interface Design & User Experience",
-      image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
+      image: "/dummyimg.png",
+      skills: ["Figma", "React", "Design Systems", "User Research"],
+      icon: Palette,
+      github: "sarahkim",
+      linkedin: "sarah-kim"
+    },
+    {
+      name: "Bhavik Gupta",
+      role: "UI/UX Designer",
+      specialization: "Interface Design & User Experience",
+      image: "/dummyimg.png",
       skills: ["Figma", "React", "Design Systems", "User Research"],
       icon: Palette,
       github: "sarahkim",

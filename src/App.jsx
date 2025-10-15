@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route } from 'react-router-dom'; // Changed to HashRouter
 import { Provider } from 'react-redux';
 import store from './store/store';
 import Home from './pages/Home';
@@ -12,7 +12,7 @@ import ControlPanel from './pages/ControlPanel';
 function App() {
   return (
     <Provider store={store}>
-      <Router>
+      <Router>  {/* No basename needed with HashRouter */}
         <div className="min-h-screen bg-gray-50">
           <Routes>
             <Route path="/" element={<Home />} />
